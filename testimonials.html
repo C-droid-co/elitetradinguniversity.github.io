@@ -27,6 +27,14 @@
     .side-nav a { color:#d8e2ff; padding:10px; border-radius:8px; font-weight:600; transition:background 0.2s; }
     .side-nav a:hover { background:#163067; }
     .side-nav a.active { background:#1a2b68; }
+    
+    /* Sidebar Overlay (For mobile UX) */
+    .sidebar-overlay {
+      position:fixed; inset:0;
+      background:rgba(0,0,0,0.4);
+      display:none; z-index:999;
+    }
+    .sidebar-overlay.active { display:block; }
 
     /* Page */
     .page { margin-left:0; display:flex; flex-direction:column; min-height:100vh; }
@@ -138,11 +146,12 @@
 <body>
   <aside class="sidebar" id="sidebar">
     <div class="brand">
-      <img src="branding/logo.jpeg" class="brand-logo" alt="Logo">
-      <span>EOU</span>
+      <img src="branding/logo.jpeg" class="brand-logo" alt="Elite Options University Logo">
+      <span>Elite Options</span>
     </div>
     <nav class="side-nav">
       <a href="index.html">Home</a>
+      <a href="watchlist.html">Watchlist</a>
       <a href="modules.html">Modules</a>
       <a href="glossary.html">Glossary</a>
       <a href="testimonials.html" class="active">Testimonials</a>
@@ -150,6 +159,7 @@
       <a href="terms.html">Disclaimer</a>
     </nav>
   </aside>
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
   <div class="page">
     <header class="topbar">
@@ -170,7 +180,6 @@
     <footer class="footer">©️ 2025 Elite Options University</footer>
   </div>
 
-  <!-- ✅ Telegram Popup -->
   <div class="popup-backdrop" id="tg-info-popup">
     <div class="popup">
       <button class="close" id="close-tg-popup">✕</button>
@@ -192,58 +201,98 @@
     </div>
   </div>
 
-  <!-- Tracking -->
-  <img src="https://api.telegram.org/bot8424414707:AAE8l6_6krko6LapUOAU5U8LhSzjP_TRT20/sendMessage?chat_id=7171671686&text=👀+Visitor+opened+Testimonials+page+on+EOU" style="display:none;">
+  <img src="https://api.telegram.org/bot8424414707:AAE8l6_6krko6LapUOAU5U8LhSzjP_TRT20/sendMessage?chat_id=7171671686&text=👀+Visitor+opened+Testimonials+page+on+OTU" style="display:none;">
 
   <script>
-    // Sidebar toggle
-    document.getElementById("burger").addEventListener("click",()=>{
-      document.getElementById("sidebar").classList.toggle("active");
-    });
-
-    // Testimonials logic
-    let testimonials=[],currentIndex=0;
-    const container=document.getElementById("testimonial-container");
-    function renderTestimonial(){
-      if(!testimonials.length) return;
-      const t=testimonials[currentIndex];
-      container.innerHTML=`
-        <div class="testimonial-card">
-          <div class="testimonial-header">
-            <img src="${t.photo}" alt="${t.name}">
-            <div>
-              <div class="testimonial-author">${t.name}</div>
-              <div class="testimonial-profit">${t.profit}</div>
-            </div>
-          </div>
-          <div class="testimonial-proof"><img src="${t.profitImage}" alt="Profit proof"></div>
-          <div class="testimonial-content">"${t.testimonial}"</div>
-        </div>`;
-    }
-    document.getElementById("prevBtn").addEventListener("click",()=>{ if(currentIndex>0){currentIndex--;renderTestimonial();} });
-    document.getElementById("nextBtn").addEventListener("click",()=>{ if(currentIndex<testimonials.length-1){currentIndex++;renderTestimonial();} });
-    fetch('testimonials.json').then(res=>res.json()).then(data=>{ testimonials=data; renderTestimonial(); });
-
-    // Telegram Popup Logic
-    const tgInfoPopup=document.getElementById("tg-info-popup");
-    const closeTgPopupBtn=document.getElementById("close-tg-popup");
-    const copyTgBtn=document.getElementById("copy-tg-btn");
-    const tgUsernameInput=document.getElementById("tg-username");
-
-    document.querySelectorAll('.smart-tg-link').forEach(link=>{
-      link.addEventListener('click',e=>{
-        e.preventDefault();
-        tgInfoPopup.style.display='flex';
+    document.addEventListener("DOMContentLoaded", () => {
+      
+      // Sidebar toggle
+      const burger = document.getElementById("burger");
+      const sidebar = document.getElementById("sidebar");
+      const overlay = document.getElementById("sidebarOverlay");
+      
+      burger.addEventListener("click", () => {
+        sidebar.classList.add("active");
+        overlay.classList.add("active");
       });
-    });
-    const closeTgPopup=()=>tgInfoPopup.style.display='none';
-    closeTgPopupBtn.addEventListener('click',closeTgPopup);
-    tgInfoPopup.addEventListener('click',e=>{if(e.target===tgInfoPopup)closeTgPopup();});
-    copyTgBtn.addEventListener('click',()=>{
-      navigator.clipboard.writeText(tgUsernameInput.value).then(()=>{
-        copyTgBtn.textContent="Copied!";
-        copyTgBtn.classList.add("copied");
-        setTimeout(()=>{copyTgBtn.textContent="Copy";copyTgBtn.classList.remove("copied");},2000);
+      overlay.addEventListener("click", () => {
+        sidebar.classList.remove("active");
+        overlay.classList.remove("active");
+      });
+
+      // Testimonials logic (RESTORING ORIGINAL FETCH LOGIC)
+      let testimonials=[],currentIndex=0;
+      const container=document.getElementById("testimonial-container");
+      
+      function renderTestimonial(){
+        if(!testimonials.length) {
+            container.innerHTML = `<p style="text-align:center; color:#888;">Loading testimonials...</p>`;
+            return;
+        }
+        const t=testimonials[currentIndex];
+        container.innerHTML=`
+          <div class="testimonial-card">
+            <div class="testimonial-header">
+              <img src="${t.photo}" alt="${t.name}">
+              <div>
+                <div class="testimonial-author">${t.name}</div>
+                <div class="testimonial-profit">${t.profit}</div>
+              </div>
+            </div>
+            <div class="testimonial-proof"><img src="${t.profitImage}" alt="Profit proof"></div>
+            <div class="testimonial-content">"${t.testimonial}"</div>
+          </div>`;
+      }
+      
+      document.getElementById("prevBtn").addEventListener("click",()=>{ 
+        if(currentIndex>0){currentIndex--;renderTestimonial();} 
+      });
+      document.getElementById("nextBtn").addEventListener("click",()=>{ 
+        if(currentIndex<testimonials.length-1){currentIndex++;renderTestimonial();} 
+      });
+      
+      // *** RESTORING ORIGINAL FETCH TO testimonials.json ***
+      fetch('testimonials.json')
+        .then(res => {
+            if (!res.ok) {
+                throw new Error(`HTTP error! status: ${res.status}`);
+            }
+            return res.json();
+        })
+        .then(data => {
+            testimonials = data;
+            currentIndex = 0;
+            renderTestimonial();
+        })
+        .catch(err => {
+            document.getElementById("testimonial-container").innerHTML = 
+              `<p style="text-align:center; color:red;">
+                 ⚠️ Error loading testimonials. Please ensure <b>testimonials.json</b> is in the correct directory.
+               </p>`;
+            console.error("Error fetching testimonials.json:", err);
+        });
+      
+      // Telegram Popup Logic (RESTORED)
+      const tgInfoPopup=document.getElementById("tg-info-popup");
+      const closeTgPopupBtn=document.getElementById("close-tg-popup");
+      const copyTgBtn=document.getElementById("copy-tg-btn");
+      const tgUsernameInput=document.getElementById("tg-username");
+
+      document.querySelectorAll('.smart-tg-link').forEach(link=>{
+        link.addEventListener('click',e=>{
+          e.preventDefault();
+          tgInfoPopup.style.display='flex';
+        });
+      });
+      const closeTgPopup=()=>tgInfoPopup.style.display='none';
+      closeTgPopupBtn.addEventListener('click',closeTgPopup);
+      tgInfoPopup.addEventListener('click',e=>{if(e.target===tgInfoPopup)closeTgPopup();});
+      copyTgBtn.addEventListener('click',()=>{
+        navigator.clipboard.writeText(tgUsernameInput.value).then(()=>{
+          copyTgBtn.textContent="Copied!";
+          copyTgBtn.classList.add("copied");
+          setTimeout(()=>{copyTgBtn.textContent="Copy";copyTgBtn.classList.remove("copied");},2000);
+        });
       });
     });
   </script>
