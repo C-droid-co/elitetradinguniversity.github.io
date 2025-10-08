@@ -56,10 +56,10 @@
     /* Footer */
     .footer { margin-top:40px; background:#0b1328; color:#9cb2ff; text-align:center; padding:12px; }
 
-    /* Telegram Popup */
+    /* Telegram Info Popup */
     .popup-backdrop {
-      position:fixed; inset:0; display:none;
-      align-items:center; justify-content:center;
+      position:fixed; inset:0;
+      display:none; align-items:center; justify-content:center;
       background:rgba(0,0,0,0.55); z-index:2000;
       backdrop-filter:blur(5px);
     }
@@ -95,7 +95,7 @@
 </head>
 <body>
   <aside class="sidebar" id="sidebar">
-    <h2>Elite Uni</h2>
+    <h2>EOU</h2>
     <a href="index.html">Home</a>
     <a href="modules.html">Modules</a>
     <a href="glossary.html">Glossary</a>
@@ -123,12 +123,12 @@
     <footer class="footer">©️ 2025 Elite Options University</footer>
   </div>
 
-  <!-- ✅ Telegram Popup (same system as yours) -->
+  <!-- ✅ Universal Telegram Popup -->
   <div class="popup-backdrop" id="tg-info-popup">
     <div class="popup">
       <button class="close" id="close-tg-popup">✕</button>
       <h2>Contact a Mentor</h2>
-      <p>Some platforms block direct links. Please use an option below:</p>
+      <p>Some platforms may have broken pages or block Telegram links.<br>Please use an option below:</p>
       <div class="modal-option">
         <label for="tg-username">Option 1: Copy Telegram Username</label>
         <div class="input-group">
@@ -137,16 +137,14 @@
         </div>
       </div>
       <div class="modal-option">
-        <label>Option 2: Use Direct Link</label>
+        <label>Option 2: Try Direct Link</label>
         <a href="https://t.me/Shtrading01" target="_blank" class="btn">Open on Telegram</a>
       </div>
     </div>
   </div>
 
-  <img 
-  src="https://api.telegram.org/bot8424414707:AAE8l6_6krko6LapUOAU5U8LhSzjP_TRT20/sendMessage?chat_id=7171671686&text=👀+New+visitor+on+Testimonials+page+at+EliteOptionsUniversity"
-  style="display:none;"
-  >
+  <!-- Tracking -->
+  <img src="https://api.telegram.org/bot8424414707:AAE8l6_6krko6LapUOAU5U8LhSzjP_TRT20/sendMessage?chat_id=7171671686&text=👀+Visitor+opened+Testimonials+page+at+eliteoptionsuniversity.online" style="display:none;">
 
   <script>
     // Sidebar toggle
@@ -171,7 +169,6 @@
     }
     document.getElementById("prevBtn").addEventListener("click",()=>{ if(currentIndex>0){currentIndex--;renderTestimonial();} });
     document.getElementById("nextBtn").addEventListener("click",()=>{ if(currentIndex<testimonials.length-1){currentIndex++;renderTestimonial();} });
-
     fetch('testimonials.json').then(res=>res.json()).then(data=>{ testimonials=data; renderTestimonial(); });
 
     // ✅ Telegram Popup Logic
