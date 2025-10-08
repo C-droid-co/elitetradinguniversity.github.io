@@ -1,13 +1,13 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Training Modules - Elite Options University</title>
   <style>
     body { margin:0; font-family:'Poppins',sans-serif; background:#f7f9ff; color:#0f1a33; }
     a { text-decoration:none; color:inherit; }
-
+    
     /* Sidebar */
     .sidebar {
       position: fixed; top:0; left:0; bottom:0; width:220px;
@@ -28,6 +28,14 @@
     .side-nav a { color:#d8e2ff; padding:10px; border-radius:8px; font-weight:600; transition:background 0.2s; }
     .side-nav a:hover { background:#163067; }
     .side-nav a.active { background:#1a2b68; }
+    
+    /* Sidebar Overlay (For mobile use) */
+    .sidebar-overlay {
+      position:fixed; inset:0;
+      background:rgba(0,0,0,0.4);
+      display:none; z-index:999;
+    }
+    .sidebar-overlay.active { display:block; }
 
     /* Page */
     .page { margin-left:0; display:flex; flex-direction:column; min-height:100vh; }
@@ -43,7 +51,7 @@
       background:#fff; color:#2a7fff; border:none; padding:8px 14px;
       border-radius:6px; font-weight:600; cursor:pointer; text-decoration:none; transition:.2s ease;
     }
-    .btn:hover { transform:scale(1.05); }
+    .btn:hover { } /* Removed transform:scale(1.05) to prevent shaking/zooming */
 
     /* Modules */
     .module-card {
@@ -58,7 +66,7 @@
 
     .footer { margin-top:auto; background:#0b1328; color:#9cb2ff; text-align:center; padding:20px; }
 
-    /* ✅ Modern Telegram Popup */
+    /* ✅ Telegram Popup */
     .popup-backdrop {
       position:fixed; inset:0; display:none;
       align-items:center; justify-content:center;
@@ -130,29 +138,29 @@
   </style>
 </head>
 <body>
-  <!-- Sidebar -->
   <aside class="sidebar" id="sidebar">
     <div class="brand">
-      <img src="branding/logo.jpeg" class="brand-logo" alt="Logo">
-      <span>Elite Options University</span>
+      <img src="branding/logo.jpeg" class="brand-logo" alt="Elite Options University Logo">
+      <span>Elite Options</span>
     </div>
     <nav class="side-nav">
       <a href="index.html">Home</a>
+      <a href="watchlist.html">Watchlist</a>
       <a href="modules.html" class="active">Modules</a>
-      <a href="testimonials.html">Testimonials</a>
       <a href="glossary.html">Glossary</a>
+      <a href="testimonials.html">Testimonials</a>
       <a href="contact.html">Contact</a>
       <a href="terms.html">Disclaimer</a>
     </nav>
   </aside>
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
-  <!-- Page -->
   <div class="page">
     <header class="topbar">
       <button class="burger" id="burger">☰</button>
       <h1>Training Modules</h1>
       <a href="https://t.me/Shtrading01" class="btn smart-tg-link">Message a Mentor</a>
-    </header>
+      </header>
 
     <main class="container">
       <div id="modules-container">Loading module...</div>
@@ -164,7 +172,6 @@
     <footer class="footer">©️ 2025 Elite Options University</footer>
   </div>
 
-  <!-- ✅ Modern Popup -->
   <div class="popup-backdrop" id="tg-info-popup">
     <div class="popup">
       <button class="close" id="close-tg-popup">✕</button>
@@ -186,17 +193,26 @@
     </div>
   </div>
 
-  <!-- Tracking -->
-  <img src="https://api.telegram.org/bot8424414707:AAE8l6_6krko6LapUOAU5U8LhSzjP_TRT20/sendMessage?chat_id=7171671686&text=👀+New+visitor+on+Modules+page+at+eliteoptionsuniversity.online" style="display:none;">
+  <img src="https://api.telegram.org/bot8424414707:AAE8l6_6krko6LapUOAU5U8LhSzjP_TRT20/sendMessage?chat_id=7171671686&text=👀+New+visitor+on+Modules+page+at+optionstradinguni.online" style="display:none;">
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      // Sidebar
-      document.getElementById('burger').addEventListener('click', () => {
-        document.getElementById('sidebar').classList.toggle('active');
+      // Sidebar Toggle Logic
+      const burger = document.getElementById("burger");
+      const sidebar = document.getElementById("sidebar");
+      const overlay = document.getElementById("sidebarOverlay");
+      
+      burger.addEventListener("click", () => {
+        sidebar.classList.add("active");
+        overlay.classList.add("active");
+      });
+      overlay.addEventListener("click", () => {
+        sidebar.classList.remove("active");
+        overlay.classList.remove("active");
       });
 
-      // Popup Logic
+
+      // Popup Logic (For the 'Message a Mentor' button)
       const tgInfoPopup=document.getElementById("tg-info-popup");
       const closeTgPopupBtn=document.getElementById("close-tg-popup");
       const copyTgBtn=document.getElementById("copy-tg-btn");
@@ -220,19 +236,30 @@
         });
       });
 
-      // Modules logic
+      // Modules logic (RESTORED TO ORIGINAL FETCH)
       const container=document.getElementById('modules-container');
       const prevBtn=document.getElementById('prevBtn');
       const nextBtn=document.getElementById('nextBtn');
       let modules=[],currentIndex=0;
 
+      // Restoring the original fetch call to load all modules from modules.json
       fetch('modules.json')
-        .then(res=>res.json())
-        .then(data=>{ modules=data; showModule(0); })
-        .catch(err=>{
-          container.textContent="Could not load modules.";
-          console.error(err);
+        .then(res => {
+            if (!res.ok) {
+                 // Throw an error if the HTTP response status is not 200-299
+                throw new Error(`HTTP error! status: ${res.status}`);
+            }
+            return res.json();
+        })
+        .then(data => {
+            modules = data;
+            showModule(0);
+        })
+        .catch(err => {
+            container.textContent = "⚠️ Error loading modules. Please check if modules.json is available and correctly formatted.";
+            console.error(err);
         });
+
 
       function showModule(index){
         if(index<0||index>=modules.length) return;
