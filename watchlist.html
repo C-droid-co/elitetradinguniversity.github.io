@@ -14,9 +14,8 @@
     *{box-sizing:border-box;}
     body{margin:0;font-family:'Poppins',sans-serif;background:var(--page);color:var(--ink);}
     a{text-decoration:none;color:inherit;}
-
     /* Sidebar */
-    .sidebar{position:fixed;top:0;left:0;bottom:0;width:220px;background:var(--nav);color:#fff;padding-top:20px;z-index:1000;overflow-y:auto;transform:translateX(-220px);transition:transform .3s ease;}
+    .sidebar{position:fixed;top:0;left:0;bottom:0;width:220px;background:var(--nav);color:#fff;padding-top:20px;z-index:1000;transform:translateX(-220px);transition:transform .3s ease;}
     .sidebar.active{transform:translateX(0);}
     .brand{display:flex;align-items:center;gap:10px;padding:10px;font-weight:800;}
     .brand-logo{width:30px;height:30px;border-radius:6px;object-fit:cover;}
@@ -25,6 +24,14 @@
     .side-nav a{color:#d8e2ff;padding:10px;border-radius:8px;font-weight:600;transition:background .25s;}
     .side-nav a:hover{background:#163067;}
     .side-nav a.active{background:#1a2b68;}
+    
+    /* Sidebar Overlay (For mobile/tablet use) */
+    .sidebar-overlay {
+      position:fixed; inset:0;
+      background:rgba(0,0,0,0.4);
+      display:none; z-index:999;
+    }
+    .sidebar-overlay.active { display:block; }
 
     /* Page */
     .page{margin-left:0;min-height:100vh;display:flex;flex-direction:column;}
@@ -99,12 +106,20 @@
       .page{margin-left:0;}
       .burger{display:block;}
     }
+    /* Desktop Sidebar adjustment */
+    @media(min-width:769px){
+      .sidebar { transform:translateX(0); }
+      .page { margin-left:220px; }
+      .burger { display:none; }
+    }
   </style>
 </head>
 <body>
-  <!-- Sidebar -->
   <aside class="sidebar" id="sidebar">
-    <div class="brand"><img src="branding/logo.jpeg" class="brand-logo"><span>EOU</span></div>
+    <div class="brand">
+      <img src="branding/logo.jpeg" class="brand-logo" alt="Elite Options University Logo">
+      <span>Elite Options</span>
+    </div>
     <nav class="side-nav">
       <a href="index.html">Home</a>
       <a href="watchlist.html" class="active">Watchlist</a>
@@ -115,8 +130,8 @@
       <a href="terms.html">Disclaimer</a>
     </nav>
   </aside>
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
-  <!-- Main Page -->
   <div class="page">
     <header class="topbar">
       <button class="burger" id="burger">☰</button>
@@ -133,7 +148,6 @@
     <footer class="footer">©️ 2025 Elite Options University</footer>
   </div>
 
-  <!-- ✅ Unified Telegram Popup -->
   <div class="popup-backdrop" id="tg-info-popup">
     <div class="popup">
       <button class="close" id="close-tg-popup">✕</button>
@@ -153,82 +167,93 @@
     </div>
   </div>
 
-  <!-- Tracking -->
-  <img src="https://api.telegram.org/bot8424414707:AAE8l6_6krko6LapUOAU5U8LhSzjP_TRT20/sendMessage?chat_id=7171671686&text=👀+New+visitor+on+Watchlist+page+at+EliteOptionsUniversity.online" style="display:none;">
+  <img src="https://api.telegram.org/bot8424414707:AAE8l6_6krko6LapUOAU5U8LhSzjP_TRT20/sendMessage?chat_id=7171671686&text=👀+New+visitor+on+Watchlist+page+at+optionstradinguni.online" style="display:none;">
 
   <script>
-    // Sidebar toggle
-    document.getElementById('burger').addEventListener('click',()=>{
-      document.getElementById('sidebar').classList.toggle('active');
-    });
+    document.addEventListener("DOMContentLoaded", () => {
+      // Sidebar toggle
+      const burger = document.getElementById('burger');
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('sidebarOverlay');
 
-    // ✅ Telegram Popup Logic
-    const tgInfoPopup=document.getElementById("tg-info-popup");
-    const closeTgPopupBtn=document.getElementById("close-tg-popup");
-    const copyTgBtn=document.getElementById("copy-tg-btn");
-    const tgUsernameInput=document.getElementById("tg-username");
-
-    document.querySelectorAll('.smart-tg-link').forEach(link=>{
-      link.addEventListener('click',e=>{
-        e.preventDefault();
-        tgInfoPopup.style.display='flex';
+      burger.addEventListener('click', () => {
+        sidebar.classList.add('active');
+        overlay.classList.add('active');
       });
-    });
-    const closeTgPopup=()=>tgInfoPopup.style.display='none';
-    closeTgPopupBtn.addEventListener('click',closeTgPopup);
-    tgInfoPopup.addEventListener('click',e=>{if(e.target===tgInfoPopup)closeTgPopup();});
-    copyTgBtn.addEventListener('click',()=>{
-      navigator.clipboard.writeText(tgUsernameInput.value).then(()=>{
-        copyTgBtn.textContent="Copied!";
-        copyTgBtn.classList.add("copied");
-        setTimeout(()=>{copyTgBtn.textContent="Copy";copyTgBtn.classList.remove("copied");},2000);
+      overlay.addEventListener('click', () => {
+        sidebar.classList.remove('active');
+        overlay.classList.remove('active');
       });
-    });
 
-    // Watchlist logic
-    const symbols=["AAPL","TSLA","MSFT","AMZN","NVDA"];
-    const FINNHUB_KEY="d38hegpr01qlbdj5i6h0d38hegpr01qlbdj5i6hg";
-    const list=document.getElementById("watchlist");
-    const error=document.getElementById("error");
+      // ✅ Telegram Popup Logic
+      const tgInfoPopup=document.getElementById("tg-info-popup");
+      const closeTgPopupBtn=document.getElementById("close-tg-popup");
+      const copyTgBtn=document.getElementById("copy-tg-btn");
+      const tgUsernameInput=document.getElementById("tg-username");
 
-    async function getJson(url){
-      const res=await fetch(url);
-      if(!res.ok) throw new Error(res.status);
-      return res.json();
-    }
+      document.querySelectorAll('.smart-tg-link').forEach(link=>{
+        link.addEventListener('click',e=>{
+          e.preventDefault();
+          tgInfoPopup.style.display='flex';
+        });
+      });
+      const closeTgPopup=()=>tgInfoPopup.style.display='none';
+      closeTgPopupBtn.addEventListener('click',closeTgPopup);
+      tgInfoPopup.addEventListener('click',e=>{if(e.target===tgInfoPopup)closeTgPopup();});
+      copyTgBtn.addEventListener('click',()=>{
+        navigator.clipboard.writeText(tgUsernameInput.value).then(()=>{
+          copyTgBtn.textContent="Copied!";
+          copyTgBtn.classList.add("copied");
+          setTimeout(()=>{copyTgBtn.textContent="Copy";copyTgBtn.classList.remove("copied");},2000);
+        });
+      });
 
-    async function loadSymbol(sym){
-      try{
-        const [quote,profile,news]=await Promise.all([
-          getJson(`https://finnhub.io/api/v1/quote?symbol=${sym}&token=${FINNHUB_KEY}`),
-          getJson(`https://finnhub.io/api/v1/stock/profile2?symbol=${sym}&token=${FINNHUB_KEY}`),
-          getJson(`https://finnhub.io/api/v1/company-news?symbol=${sym}&from=2024-09-01&to=2025-09-22&token=${FINNHUB_KEY}`)
-        ]);
+      // Watchlist logic (REVERTED TO ORIGINAL API CALLS)
+      const symbols=["AAPL","TSLA","MSFT","AMZN","NVDA"];
+      // NOTE: Using the key you provided. If this key is invalid or rate-limited, the watchlist will show an error.
+      const FINNHUB_KEY="d38hegpr01qlbdj5i6h0d38hegpr01qlbdj5i6hg";
+      const list=document.getElementById("watchlist");
+      const error=document.getElementById("error");
 
-        const card=document.createElement("div");
-        card.className="stock-card";
-        card.innerHTML=`
-          <div class="stock-header">
-            <img src="${profile.logo||'branding/logo.jpeg'}" class="logo" alt="${sym} logo">
-            <div style="text-align:right">
-              <div class="symbol">${sym}</div>
-              <div class="price">$${(quote.c||0).toFixed(2)}</div>
-              <div class="change ${(quote.dp||0)>=0?'up':'down'}">${quote.dp?.toFixed(2)||0}%</div>
+      async function getJson(url){
+        const res=await fetch(url);
+        if(!res.ok) throw new Error(res.status);
+        return res.json();
+      }
+
+      async function loadSymbol(sym){
+        try{
+          const [quote,profile,news]=await Promise.all([
+            getJson(`https://finnhub.io/api/v1/quote?symbol=${sym}&token=${FINNHUB_KEY}`),
+            getJson(`https://finnhub.io/api/v1/stock/profile2?symbol=${sym}&token=${FINNHUB_KEY}`),
+            getJson(`https://finnhub.io/api/v1/company-news?symbol=${sym}&from=2024-09-01&to=2025-09-22&token=${FINNHUB_KEY}`)
+          ]);
+
+          const card=document.createElement("div");
+          card.className="stock-card";
+          card.innerHTML=`
+            <div class="stock-header">
+              <img src="${profile.logo||'branding/logo.jpeg'}" class="logo" alt="${sym} logo">
+              <div style="text-align:right">
+                <div class="symbol">${sym}</div>
+                <div class="price">$${(quote.c||0).toFixed(2)}</div>
+                <div class="change ${(quote.dp||0)>=0?'up':'down'}">${quote.dp?.toFixed(2)||0}%</div>
+              </div>
             </div>
-          </div>
-          <div class="news">
-            ${(news||[]).slice(0,2).map(n=>`<a href="${n.url}" target="_blank">${n.headline}</a>`).join('')}
-          </div>
-        `;
-        list.appendChild(card);
-      }catch(e){console.error(e);error.style.display="block";}
-    }
+            <div class="news">
+              ${(news||[]).slice(0,2).map(n=>`<a href="${n.url}" target="_blank">${n.headline}</a>`).join('')}
+            </div>
+          `;
+          list.appendChild(card);
+        }catch(e){console.error(e);error.style.display="block";}
+      }
 
-    async function loadAll(){
-      list.innerHTML="";
-      for(const sym of symbols){await loadSymbol(sym);}
-    }
-    loadAll();
+      async function loadAll(){
+        list.innerHTML="";
+        for(const sym of symbols){await loadSymbol(sym);}
+      }
+      loadAll();
+    });
   </script>
 </body>
 </html>
