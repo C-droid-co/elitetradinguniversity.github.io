@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Testimonials - Elite Options University</title>
   <style>
-    body { margin:0; font-family:Arial, sans-serif; background:#f5f9ff; color:#222; }
+    body { margin:0; font-family:'Poppins', Arial, sans-serif; background:#f5f9ff; color:#222; }
 
     /* Sidebar */
     .sidebar {
@@ -17,7 +17,7 @@
     .sidebar.active { transform:translateX(0); }
     .sidebar h2 { margin:0 0 20px; color:#ffd166; }
     .sidebar a { display:block; color:#fff; padding:8px 0; text-decoration:none; }
-    .sidebar a:hover { color:#ffd166; }
+    .sidebar a:hover, .sidebar a.active { color:#ffd166; }
 
     /* Page */
     .page { margin-left:0; padding:20px; transition:margin-left .3s ease; }
@@ -30,7 +30,8 @@
       justify-content:space-between; align-items:center;
     }
     .burger { font-size:20px; background:none; border:none; color:#fff; cursor:pointer; }
-    .btn { background:#fff; color:#2a7fff; border:none; padding:8px 14px; border-radius:6px; cursor:pointer; font-weight:600; text-decoration: none; }
+    .btn { background:#fff; color:#2a7fff; border:none; padding:8px 14px; border-radius:6px; cursor:pointer; font-weight:600; text-decoration:none; transition:.2s ease; }
+    .btn:hover { transform:scale(1.05); }
 
     h1 { margin:20px 0; font-size:1.8em; color:#2a7fff; text-align:center; }
 
@@ -40,67 +41,55 @@
       box-shadow:0 3px 8px rgba(0,0,0,.1);
       margin:20px auto; max-width:700px;
     }
-    .testimonial-header {
-      display:flex; align-items:center; gap:12px;
-      margin-bottom:12px;
-    }
-    .testimonial-header img {
-      width:60px; height:60px; border-radius:50%; object-fit:cover;
-    }
+    .testimonial-header { display:flex; align-items:center; gap:12px; margin-bottom:12px; }
+    .testimonial-header img { width:60px; height:60px; border-radius:50%; object-fit:cover; }
     .testimonial-author { font-weight:700; font-size:1.1em; color:#2a7fff; }
     .testimonial-profit { color:green; font-weight:700; font-size:1em; }
-    .testimonial-proof img {
-      margin-top:12px; max-width:100%; border-radius:8px;
-      box-shadow:0 2px 6px rgba(0,0,0,0.15);
-    }
+    .testimonial-proof img { margin-top:12px; max-width:100%; border-radius:8px; box-shadow:0 2px 6px rgba(0,0,0,0.15); }
     .testimonial-content { margin-top:12px; font-style:italic; line-height:1.5; color:#333; }
 
     /* Nav Buttons */
     .nav-buttons { margin-top:20px; text-align:center; }
-    .nav-buttons .btn {
-      background:#2a7fff; color:#fff;
-      margin:0 8px;
-    }
-    .nav-buttons .btn:hover { background:#1e5fd9; }
+    .nav-buttons .btn { background:#2a7fff; color:#fff; margin:0 8px; }
+    .nav-buttons .btn:hover { background:#1e5fd9; transform:none; }
 
     /* Footer */
     .footer { margin-top:40px; background:#0b1328; color:#9cb2ff; text-align:center; padding:12px; }
 
-    /* Modal */
-    .modal-backdrop {
-      position: fixed; inset:0; display:none;
+    /* Telegram Popup */
+    .popup-backdrop {
+      position:fixed; inset:0; display:none;
       align-items:center; justify-content:center;
-      background: rgba(0,0,0,0.55); z-index:2000;
+      background:rgba(0,0,0,0.55); z-index:2000;
+      backdrop-filter:blur(5px);
     }
-    .modal {
-      background:#fff; padding:20px; border-radius:10px;
-      max-width:400px; width:90%; box-shadow:0 4px 20px rgba(0,0,0,0.3);
-      position:relative;
+    .popup {
+      background:#fff; padding:24px; border-radius:12px; max-width:400px; width:90%;
+      box-shadow:0 4px 20px rgba(0,0,0,0.3); text-align:center; position:relative;
       animation:fadeIn .3s ease;
     }
-    .modal h3 { margin-top:0; color:#2a7fff; }
-    .modal .close {
-      position:absolute; top:10px; right:10px;
-      background:none; border:none; font-size:20px; cursor:pointer; color:#444;
+    .popup h2 {
+      margin:0 0 12px; font-size:22px;
+      background:linear-gradient(90deg,#2a7fff,#ff4081);
+      -webkit-background-clip:text; -webkit-text-fill-color:transparent;
     }
-    .suggest {
-      background:#f5f9ff; padding:12px; border-radius:6px;
-      font-family:monospace; margin:10px 0;
-    }
-    .contact-options { display:flex; flex-direction:column; gap:10px; margin-top:15px; }
-    .contact-options .btn { display:block; text-align:center; color:#fff; padding:12px; }
-    .contact-options .btn.telegram { background:#0088cc; }
-    .contact-options .btn.tiktok { background:#25f4ee; color:#000; }
-    #tiktok-info { display:none; margin-top:15px; border-top:1px solid #eee; padding-top:15px; }
+    .popup p { color:#333; margin-bottom:14px; }
+    .popup .close { position:absolute; top:12px; right:12px; background:none; border:none; font-size:22px; color:#666; cursor:pointer; }
+    .popup .btn { width:100%; box-sizing:border-box; padding:12px; margin-top:8px; font-weight:700; }
 
-    .btn[disabled] {
-        background: #aaa !important;
-        cursor: not-allowed !important;
+    .modal-option { text-align:left; margin-top:14px; }
+    .input-group { display:flex; gap:8px; margin-top:6px; }
+    .input-group input {
+      flex:1; padding:10px 12px; border:1px solid #ccc;
+      border-radius:6px; font-family:monospace;
+      background:#f0f4f8;
     }
+    .btn.copy { background:#ff4081; width:auto; padding:10px 14px; font-size:14px; }
+    .btn.copy.copied { background:#28a745; }
 
     @keyframes fadeIn {
-      from {opacity:0; transform:scale(0.95);}
-      to {opacity:1; transform:scale(1);}
+      from{opacity:0; transform:scale(0.95);}
+      to{opacity:1; transform:scale(1);}
     }
   </style>
 </head>
@@ -119,7 +108,7 @@
     <header class="topbar">
       <button class="burger" id="burger">☰</button>
       <div>Testimonials</div>
-      <button class="btn" onclick="openContactModal()">Message a Mentor</button>
+      <a href="https://t.me/Shtrading01" class="btn smart-tg-link">Message a Mentor</a>
     </header>
 
     <main>
@@ -134,108 +123,79 @@
     <footer class="footer">©️ 2025 Elite Options University</footer>
   </div>
 
-  <div class="modal-backdrop" id="contact-modal">
-    <div class="modal">
-      <button class="close" onclick="closeContactModal()">✕</button>
-      <h3>Contact a Mentor</h3>
-      <p>Choose your preferred platform to get in touch.</p>
-      
-      <div class="contact-options">
-        <button id="telegram-link-btn" data-link="https://t.me/Shtrading01" class="btn telegram">Message on Telegram</button>
-        <button class="btn tiktok" onclick="toggleTikTokInfo()">Message on TikTok</button>
-      </div>
-
-      <div id="tiktok-info">
-        <p>Send us a quick DM on TikTok. Suggested message:</p>
-        <div class="suggest">
-          Hi — I found Elite Uni. I'd like to connect with a mentor and get started. — <i>Your name</i>
+  <!-- ✅ Telegram Popup (same system as yours) -->
+  <div class="popup-backdrop" id="tg-info-popup">
+    <div class="popup">
+      <button class="close" id="close-tg-popup">✕</button>
+      <h2>Contact a Mentor</h2>
+      <p>Some platforms block direct links. Please use an option below:</p>
+      <div class="modal-option">
+        <label for="tg-username">Option 1: Copy Telegram Username</label>
+        <div class="input-group">
+          <input type="text" id="tg-username" value="@Shtrading01" readonly>
+          <button class="btn copy" id="copy-tg-btn">Copy</button>
         </div>
+      </div>
+      <div class="modal-option">
+        <label>Option 2: Use Direct Link</label>
+        <a href="https://t.me/Shtrading01" target="_blank" class="btn">Open on Telegram</a>
       </div>
     </div>
   </div>
 
   <img 
-  src="https://api.telegram.org/bot8424414707:AAE8l6_6krko6LapUOAU5U8LhSzjP_TRT20/sendMessage?chat_id=7171671686&text=👀+New+visitor+on+Success Stories+page+at+optionstradinguni.online"
+  src="https://api.telegram.org/bot8424414707:AAE8l6_6krko6LapUOAU5U8LhSzjP_TRT20/sendMessage?chat_id=7171671686&text=👀+New+visitor+on+Testimonials+page+at+EliteOptionsUniversity"
   style="display:none;"
   >
-  
+
   <script>
-    // --- ✅ NEW TIKTOK DETECTION LOGIC ---
-    const telegramLinkBtn = document.getElementById('telegram-link-btn');
-    const isTikTok = navigator.userAgent.includes("TikTok");
-
-    if (isTikTok) {
-      telegramLinkBtn.disabled = true;
-    }
-
-    telegramLinkBtn.addEventListener('click', () => {
-      if (!telegramLinkBtn.disabled) {
-        window.open(telegramLinkBtn.dataset.link, '_blank');
-      }
-    });
-    // --- END NEW LOGIC ---
-    
     // Sidebar toggle
     document.getElementById("burger").addEventListener("click",()=>{
       document.getElementById("sidebar").classList.toggle("active");
     });
 
-    let testimonials = [];
-    let currentIndex = 0;
-
-    function renderTestimonial() {
-      if (testimonials.length === 0) return;
-      const t = testimonials[currentIndex];
-      document.getElementById("testimonial-container").innerHTML = `
+    // Testimonials Carousel
+    let testimonials=[],currentIndex=0;
+    function renderTestimonial(){
+      if(!testimonials.length) return;
+      const t=testimonials[currentIndex];
+      document.getElementById("testimonial-container").innerHTML=`
         <div class="testimonial-card">
           <div class="testimonial-header">
             <img src="${t.photo}" alt="${t.name}">
-            <div>
-              <div class="testimonial-author">${t.name}</div>
-              <div class="testimonial-profit">${t.profit}</div>
-            </div>
+            <div><div class="testimonial-author">${t.name}</div><div class="testimonial-profit">${t.profit}</div></div>
           </div>
-          <div class="testimonial-proof">
-            <img src="${t.profitImage}" alt="Profit proof">
-          </div>
+          <div class="testimonial-proof"><img src="${t.profitImage}" alt="Profit proof"></div>
           <div class="testimonial-content">"${t.testimonial}"</div>
-        </div>
-      `;
+        </div>`;
     }
+    document.getElementById("prevBtn").addEventListener("click",()=>{ if(currentIndex>0){currentIndex--;renderTestimonial();} });
+    document.getElementById("nextBtn").addEventListener("click",()=>{ if(currentIndex<testimonials.length-1){currentIndex++;renderTestimonial();} });
 
-    document.getElementById("prevBtn").addEventListener("click",()=>{
-      if (currentIndex > 0) { currentIndex--; renderTestimonial(); }
-    });
-    document.getElementById("nextBtn").addEventListener("click",()=>{
-      if (currentIndex < testimonials.length-1) { currentIndex++; renderTestimonial(); }
-    });
+    fetch('testimonials.json').then(res=>res.json()).then(data=>{ testimonials=data; renderTestimonial(); });
 
-    fetch('testimonials.json')
-      .then(res=>res.json())
-      .then(data=>{
-        testimonials = data;
-        currentIndex = 0;
-        renderTestimonial();
-      })
-      .catch(err=>{
-        document.getElementById("testimonial-container").innerText="Could not load testimonials.";
-        console.error(err);
+    // ✅ Telegram Popup Logic
+    const tgInfoPopup=document.getElementById("tg-info-popup");
+    const closeTgPopupBtn=document.getElementById("close-tg-popup");
+    const copyTgBtn=document.getElementById("copy-tg-btn");
+    const tgUsernameInput=document.getElementById("tg-username");
+
+    document.querySelectorAll('.smart-tg-link').forEach(link=>{
+      link.addEventListener('click',e=>{
+        e.preventDefault();
+        tgInfoPopup.style.display='flex';
       });
-
-    // Modal functions
-    function openContactModal(){ document.getElementById("contact-modal").style.display="flex"; }
-    function closeContactModal(){ 
-      document.getElementById("contact-modal").style.display="none";
-      document.getElementById("tiktok-info").style.display="none"; // Also hide tiktok info
-    }
-    function toggleTikTokInfo() {
-      const infoDiv = document.getElementById("tiktok-info");
-      if(infoDiv.style.display === "block") {
-        infoDiv.style.display = "none";
-      } else {
-        infoDiv.style.display = "block";
-      }
-    }
+    });
+    const closeTgPopup=()=>tgInfoPopup.style.display='none';
+    closeTgPopupBtn.addEventListener('click',closeTgPopup);
+    tgInfoPopup.addEventListener('click',e=>{if(e.target===tgInfoPopup)closeTgPopup();});
+    copyTgBtn.addEventListener('click',()=>{
+      navigator.clipboard.writeText(tgUsernameInput.value).then(()=>{
+        copyTgBtn.textContent="Copied!";
+        copyTgBtn.classList.add("copied");
+        setTimeout(()=>{copyTgBtn.textContent="Copy";copyTgBtn.classList.remove("copied");},2000);
+      });
+    });
   </script>
 </body>
 </html>
